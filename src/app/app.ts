@@ -1,8 +1,7 @@
 import express = require('express');
-import { number } from 'fp-ts';
 import { pipe, flow } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
-import { Json } from 'io-ts-types';
+import * as E from 'fp-ts/lib/Either';
 
 const app : express.Application = express();
 
@@ -52,3 +51,45 @@ const odd = pipe(
   O.chain(addIfEven)
 );
 console.log("option odd "+ JSON.stringify(odd))
+
+
+const validateInput = (userName: string | undefined | null): string => 
+  pipe(
+    O.fromNullable(userName),
+    E.fromOption(() => "userName must be mandatory!"),
+    E.fold(
+      (left) => "userName is not valid",
+      (right) => `userName is ${userName}`
+    )
+
+  );
+console.log(validateInput('Andy'));
+console.log(validateInput(null));
+
+
+type UserInfo = {
+  userName: string,
+  password: string
+}
+
+function validUserName(user: UserInfo): E.Either<string, string> {
+  return user.userName.length > 6 ? E.right(`user name is ${user.userName}`) : E.left("invalid user name");
+}
+
+const validateUserInfo = (user: UserInfo): any => {
+  pipe(
+    user,
+    validUserName,
+    E.map(() => console.log(user.userName))
+  );
+}
+const testUserInvalidName: UserInfo = {
+  userName: "Coo",
+  password: "123456"
+}
+const testUser: UserInfo = {
+  userName: "Anglela",
+  password: "344555"
+}
+validateUserInfo(testUser)
+validateUserInfo(testUserInvalidName)
