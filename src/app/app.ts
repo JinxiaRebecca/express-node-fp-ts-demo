@@ -10,8 +10,16 @@ import { right } from "fp-ts/lib/EitherT";
 
 const app: express.Application = express();
 
-app.get("/", (req, res) => {
-  res.send("First Express and node.js app!!");
+
+type TaskItem = {
+  id: number,
+  status: string
+}
+ var taskItems: TaskItem[] = [{id: 1, status: "active"}, {id: 2, status: "suspended"}, {id: 3, status: "pending"}];
+
+//first endpoint --> /init
+app.get('/init', (req, res) => {
+  res.send(taskItems);
 });
 
 app.listen(3000, () => {
