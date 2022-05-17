@@ -9,7 +9,7 @@ import { fromEither } from "fp-ts/lib/OptionT";
 import { right } from "fp-ts/lib/EitherT";
 
 const app: express.Application = express();
-
+const bodyParse = require('body-parser');
 
 type TaskItem = {
   id: number,
@@ -21,6 +21,13 @@ type TaskItem = {
 app.get('/init', (req, res) => {
   res.send(taskItems);
 });
+
+app.use(bodyParse.urlencoded({ extended: false}));
+app.use(bodyParse.json());
+//second endpoint --> add 
+app.post('/add', (req, res)=> {
+    return res.send('hahhahahaha')
+})
 
 app.listen(3000, () => {
   console.log("Demo app listenning on port 3000");
