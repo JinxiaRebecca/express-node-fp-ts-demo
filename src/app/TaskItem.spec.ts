@@ -4,7 +4,9 @@ import { NEA, TE, T, pipe } from "./lib";
 import {
   findItemIndexByItemId,
   removeItemByIndex,
+  TaskItem,
   taskItems,
+  updateStatusOfItem,
 } from "./TaskItem";
 
 describe("TaskEither", () => {
@@ -37,14 +39,34 @@ describe("TaskEither", () => {
 
       expect(result).toEqual("delete successfully");
     });
-  });
-  it("should return delete failed", async () => {
-    let index: number = taskItems.length
-    const result = await pipe(
-      removeItemByIndex(index + 1),
-      TE.getOrElse((error) => T.of(error))
-    )();
+    it("should return delete failed", async () => {
+      let index: number = taskItems.length;
+      const result = await pipe(
+        removeItemByIndex(index + 1),
+        TE.getOrElse((error) => T.of(error))
+      )();
 
-    expect(result).toEqual("delete failed");
+      expect(result).toEqual("delete failed");
+    });
+  });
+
+  describe("updateStatusOfItem", () => {
+    it("should return update successfully", async () => {
+      let item: TaskItem = { id: 1, status: "suspened" };
+      const result = await pipe(
+        updateStatusOfItem(item),
+        TE.getOrElse((error) => T.of(error))
+      )();
+      expect(result).toEqual("update successfully");
+    });
+    it("should return update status failed", async () => {
+      let index = taskItems.length + 1;
+      let item: TaskItem = { id: index, status: "active" };
+      const result = await pipe(
+        updateStatusOfItem(item),
+        TE.getOrElse((error) => T.of(error))
+      )();
+      expect(result).toEqual("update successfully");
+    });
   });
 });

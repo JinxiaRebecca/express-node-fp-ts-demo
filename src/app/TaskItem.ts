@@ -45,3 +45,23 @@ export const removeItemByIndex = (
     TE.fromEither
   );
 
+export const updateStatusOfItem = (
+  taskItem: TaskItem
+): TE.TaskEither<string, string> =>
+  pipe(
+    taskItems,
+    A.findIndex((item) => item.id === taskItem.id),
+    O.matchW(
+      () => O.some(taskItems),
+      (right) => A.updateAt(right, taskItem)(taskItems)
+    ),
+    E.fromPredicate(
+      () =>
+        !taskItems.some(
+          (item) => item.id === taskItem.id && item.status === taskItem.status
+        ),
+      () => "update status failed"
+    ),
+    E.map(() => "update successfully"),
+    TE.fromEither
+  );
