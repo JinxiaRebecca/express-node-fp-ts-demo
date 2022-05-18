@@ -4,30 +4,45 @@ import * as O from "fp-ts/Option";
 import * as E from "fp-ts/lib/Either";
 import * as TE from "fp-ts/lib/TaskEither";
 import * as T from "fp-ts/lib/Task";
-import { string } from "fp-ts";
+import * as A from "fp-ts/lib/Array";
+import { number, string, task } from "fp-ts";
 import { fromEither } from "fp-ts/lib/OptionT";
-import { right } from "fp-ts/lib/EitherT";
+import { left, right } from "fp-ts/lib/EitherT";
+import * as TI from "../TaskItem";
+import { tuple } from "io-ts";
 
 const app: express.Application = express();
-const bodyParse = require('body-parser');
-
-type TaskItem = {
-  id: number,
-  status: string
-}
- var taskItems: TaskItem[] = [{id: 1, status: "active"}, {id: 2, status: "suspended"}, {id: 3, status: "pending"}];
+const bodyParse = require("body-parser");
 
 //first endpoint --> /init
-app.get('/init', (req, res) => {
-  res.send(taskItems);
+app.get("/init", (req, res) => {
+  res.send(TI.taskItems);
 });
 
-app.use(bodyParse.urlencoded({ extended: false}));
+app.use(bodyParse.urlencoded({ extended: false }));
 app.use(bodyParse.json());
-//second endpoint --> add 
-app.post('/add', (req, res)=> {
-    return res.send('hahhahahaha')
-})
+
+//second endpoint --> add
+app.post("/add", (req, res) => {
+  const validateInput = (item: TI.TaskItem | undefined | null) =>
+    pipe(
+      O.fromNullable(item),
+      E.fromOption(() => "The input is not present!"),
+      E.chain(TI.doubleIdValidation)
+    );
+  res.send(
+    pipe(
+      req.body as TI.TaskItem,
+      validateInput,
+      E.map((item) => TI.taskItems.push(item)),
+      E.map(() => "add successfully"),
+      E.fold(
+        (left) => `${left}`,
+        (right) => `${right}`
+      )
+    )
+  );
+});
 
 app.listen(3000, () => {
   console.log("Demo app listenning on port 3000");
