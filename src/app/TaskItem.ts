@@ -1,6 +1,4 @@
-import { task } from "fp-ts";
-import { Either } from "fp-ts/lib/Either";
-import * as E from "fp-ts/lib/Either";
+import { E } from "./lib";
 
 export type TaskItem = {
   id: number;

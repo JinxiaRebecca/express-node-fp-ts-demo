@@ -1,15 +1,7 @@
 import express = require("express");
-import { pipe, flow } from "fp-ts/lib/function";
-import * as O from "fp-ts/Option";
-import * as E from "fp-ts/lib/Either";
-import * as TE from "fp-ts/lib/TaskEither";
-import * as T from "fp-ts/lib/Task";
-import * as A from "fp-ts/lib/Array";
-import { number, string, task } from "fp-ts";
-import { fromEither } from "fp-ts/lib/OptionT";
-import { left, right } from "fp-ts/lib/EitherT";
-import * as TI from "../TaskItem";
-import { tuple } from "io-ts";
+import { pipe, flow, O, E, TE, T, A } from "./lib";
+import * as TI from "./TaskItem";
+
 
 const app: express.Application = express();
 const bodyParse = require("body-parser");
