@@ -6,7 +6,6 @@
   "scripts": {
     "test": "jest"
   },
-  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/JinxiaRebecca/express-node-fp-ts-demo.git"
