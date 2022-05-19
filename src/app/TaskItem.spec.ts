@@ -2,51 +2,28 @@ import { number } from "fp-ts-std";
 import { idText } from "typescript";
 import { NEA, TE, T, pipe } from "./lib";
 import {
-  findItemIndexByItemId,
-  removeItemByIndex,
+  removeItemById,
   TaskItem,
   taskItems,
   updateStatusOfItem,
 } from "./TaskItem";
 
 describe("TaskEither", () => {
-  describe("findItemIndexByItemId", () => {
-    it("should return the index", async () => {
-      const result = await pipe(
-        findItemIndexByItemId(1),
-        TE.getOrElseW((error) => T.of(error))
-      )();
-
-      expect(result).toEqual(0);
-    });
-
-    it("should return Item does not exist!", async () => {
-      const result = await pipe(
-        findItemIndexByItemId(100),
-        TE.getOrElseW((error) => T.of(error))
-      )();
-
-      expect(result).toEqual("Item does not exist!");
-    });
-  });
-
-  describe("removeItemByIndex", () => {
+  describe("removeItemById", () => {
     it("should return delete successfully", async () => {
       const result = await pipe(
-        removeItemByIndex(1),
+        removeItemById(1),
         TE.getOrElse((error) => T.of(error))
       )();
-
       expect(result).toEqual("delete successfully");
     });
-    it("should return delete failed", async () => {
-      let index: number = taskItems.length;
+    it("should return item does not exist", async () => {
+      let id: number = taskItems.length + 1;
       const result = await pipe(
-        removeItemByIndex(index + 1),
+        removeItemById(id),
         TE.getOrElse((error) => T.of(error))
       )();
-
-      expect(result).toEqual("delete failed");
+      expect(result).toEqual("item does not exist");
     });
   });
 
