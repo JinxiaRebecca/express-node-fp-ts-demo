@@ -1,7 +1,7 @@
 import express = require("express");
+import { left, right } from "fp-ts/lib/These";
 import { pipe, flow, O, E, TE, T, A } from "./lib";
 import * as TI from "./TaskItem";
-
 
 const app: express.Application = express();
 const bodyParse = require("body-parser");
@@ -34,6 +34,25 @@ app.post("/add", (req, res) => {
       )
     )
   );
+});
+
+//third endpoint --> remove
+app.delete("/delete/:id", (req, res) => {
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "PUT, POST, GET, DELETE, OPTIONS"
+  );
+  let itemId = Number(req.params.id);
+  res.send(
+    pipe(
+      itemId,
+      TI.removeItemById,
+      E.fold(
+        (left) => `${left}`,
+        (right) => `${right}`
+      )
+    )
+  )
 });
 
 app.listen(3000, () => {
