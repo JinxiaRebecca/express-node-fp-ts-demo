@@ -30,21 +30,26 @@ const findItemIndexByItemId = (id: number): E.Either<string, number> =>
     E.fromOption(() => "item does not exist")
   );
 
-const removeItemByIndex = (index: number): E.Either<string, string> =>
+const removeItemByIndex = (index: number): string =>
   pipe(
     taskItems,
     A.deleteAt(index),
-    E.fromOption(() => "delete failed"),
-    E.map(() => "delete successfully")
+    O.fold(
+      () => "delete failed",
+      (right) => {
+        taskItems = right;
+        return "delete successfully";
+      }
+    )
   );
 
 type ItemById = (id: number) => E.Either<string, number>;
-type DeleteItem = (index: number) => E.Either<string, string>;
+type DeleteItem = (index: number) => string;
 
 const removeItem =
   (findItemIndexByItemId: ItemById, removeItemByIndex: DeleteItem) =>
   (id: number): E.Either<string, string> =>
-    pipe(id, findItemIndexByItemId, E.chain(removeItemByIndex));
+    pipe(id, findItemIndexByItemId, E.map(removeItemByIndex));
 
 export const removeItemById = removeItem(
   findItemIndexByItemId,
@@ -66,11 +71,13 @@ export const updateItem = (taskItem: TaskItem): string =>
     ),
     O.matchW(
       () => "item does not exist",
-      (right) =>
-        right.some(
+      (right) => {
+        taskItems = right;
+        return right.some(
           (item) => item.id === taskItem.id && item.status === taskItem.status
         )
-          ? "updated successfully"
-          : "updated failed"
+          ? `updated successfully`
+          : "updated failed";
+      }
     )
   );
