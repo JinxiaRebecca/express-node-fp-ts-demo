@@ -24,30 +24,28 @@ export const doubleIdValidation = (item: TaskItem) =>
     () => "The item is already esixting"
   )(item);
 
-const findItemIndexByItemId = (id: number): TE.TaskEither<string, number> =>
+const findItemIndexByItemId = (id: number): E.Either<string, number> =>
   pipe(
     taskItems,
     A.findIndex((item) => item.id === id),
-    E.fromOption(() => "item does not exist"),
-    TE.fromEither
+    E.fromOption(() => "item does not exist")
   );
 
-const removeItemByIndex = (index: number): TE.TaskEither<string, string> =>
+const removeItemByIndex = (index: number): E.Either<string, string> =>
   pipe(
     taskItems,
     A.deleteAt(index),
     E.fromOption(() => "delete failed"),
-    E.map(() => "delete successfully"),
-    TE.fromEither
+    E.map(() => "delete successfully")
   );
 
-type ItemById = (id: number) => TE.TaskEither<string, number>;
-type DeleteItem = (index: number) => TE.TaskEither<string, string>;
+type ItemById = (id: number) => E.Either<string, number>;
+type DeleteItem = (index: number) => E.Either<string, string>;
 
 const removeItem =
   (findItemIndexByItemId: ItemById, removeItemByIndex: DeleteItem) =>
-  (id: number): TE.TaskEither<string, string> =>
-    pipe(id, findItemIndexByItemId, TE.chain(removeItemByIndex));
+  (id: number): E.Either<string, string> =>
+    pipe(id, findItemIndexByItemId, E.chain(removeItemByIndex));
 
 export const removeItemById = removeItem(
   findItemIndexByItemId,
