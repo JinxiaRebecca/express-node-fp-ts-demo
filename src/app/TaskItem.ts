@@ -1,5 +1,4 @@
-import { number } from "fp-ts";
-import { E, pipe, TE, A, O, T } from "./lib";
+import { E, pipe, A, O, T } from "./lib";
 
 export type TaskItem = {
   id: number;
@@ -52,23 +51,26 @@ export const removeItemById = removeItem(
   removeItemByIndex
 );
 
-export const updateStatusOfItem = (
-  taskItem: TaskItem
-): TE.TaskEither<string, string> =>
+export const updateItem = (taskItem: TaskItem): string =>
   pipe(
     taskItems,
-    A.findIndex((item) => item.id === taskItem.id),
+    A.updateAt(
+      pipe(
+        findItemIndexByItemId(taskItem.id),
+        E.fold(
+          () => -1,
+          (right) => right
+        )
+      ),
+      taskItem
+    ),
     O.matchW(
-      () => O.some(taskItems),
-      (right) => A.updateAt(right, taskItem)(taskItems)
-    ),
-    E.fromPredicate(
-      () =>
-        !taskItems.some(
+      () => "item does not exist",
+      (right) =>
+        right.some(
           (item) => item.id === taskItem.id && item.status === taskItem.status
-        ),
-      () => "update status failed"
-    ),
-    E.map(() => "update successfully"),
-    TE.fromEither
+        )
+          ? "updated successfully"
+          : "updated failed"
+    )
   );
