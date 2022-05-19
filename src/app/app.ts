@@ -29,8 +29,8 @@ app.post("/add", (req, res) => {
       E.map((item) => TI.taskItems.push(item)),
       E.map(() => "add successfully"),
       E.fold(
-        (left) => `${left}`,
-        (right) => `${right}`
+        (left) => left,
+        (right) => right
       )
     )
   );
@@ -48,21 +48,16 @@ app.delete("/delete/:id", (req, res) => {
       itemId,
       TI.removeItemById,
       E.fold(
-        (left) => `${left}`,
-        (right) => `${right}`
+        (left) => left,
+        (right) => right
       )
     )
-  )
+  );
 });
 
 //forth endpoint -> update status
 app.patch("/update", (req, res) => {
-  res.send(
-    pipe(
-      req.body as TI.TaskItem,
-      TI.updateItem
-    )
-  );
+  res.send(pipe(req.body as TI.TaskItem, TI.updateItem));
 });
 
 app.listen(3000, () => {
