@@ -55,6 +55,16 @@ app.delete("/delete/:id", (req, res) => {
   )
 });
 
+//forth endpoint -> update status
+app.patch("/update", (req, res) => {
+  res.send(
+    pipe(
+      req.body as TI.TaskItem,
+      TI.updateItem
+    )
+  );
+});
+
 app.listen(3000, () => {
   console.log("Demo app listenning on port 3000");
 });
